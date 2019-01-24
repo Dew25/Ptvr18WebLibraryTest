@@ -13,9 +13,9 @@
         <title>Библиотека</title>
     </head>
     <body>
-        <h1>Добавить книгу/h1>
+        <h1>Зарегистрироваться/h1>
         ${info}<br>
-        <a href="index.jsp">Главная страница</a><br>
+        <a href="index.jsp">Введите данные пользователя</a><br>
         <form action="registration" method="POST">
             Имя:<br>
             <input type="text" name="name"><br>

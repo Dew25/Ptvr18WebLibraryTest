@@ -10,6 +10,5 @@
         <property name="URL" value="jdbc:mysql://localhost:3306/ptvr16weblibrary?zeroDateTimeBehavior=convertToNull&amp;useUnicode=true&amp;characterEncoding=utf8"/>
         <property name="driverClass" value="com.mysql.jdbc.Driver"/>
     </jdbc-connection-pool>
-    <jdbc-resource enabled="true" jndi-name="java:app/Ptvr16WebLibraryDS" object-type="user" pool-name="mysql_ptvr16weblibrary_ptvr16weblibraryPool"/>
     <jdbc-resource enabled="true" jndi-name="java:app/ptvr16weblibraryDS" object-type="user" pool-name="mysql_ptvr16weblibrary_ptvr16weblibraryPool"/>
 </resources>

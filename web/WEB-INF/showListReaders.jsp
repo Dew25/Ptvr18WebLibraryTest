@@ -18,7 +18,7 @@
         <a href="index.jsp">Главная страница</a><br>
         <ul>
             <c:forEach var="reader" items="${listReaders}">
-                <li>${reader.name}, ${reader.surname}, ${reader.code}
+                <li>${reader.name}, ${reader.surname}, ${reader.email}
             </c:forEach>
         </ul>
     </body>

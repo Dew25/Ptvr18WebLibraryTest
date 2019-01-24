@@ -8,6 +8,7 @@ package servlets;
 import entity.Reader;
 import entity.User;
 import java.io.IOException;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -17,21 +18,38 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import session.ReaderFacade;
 import session.UserFacade;
+import utils.Encription;
 
 /**
  *
  * @author Melnikov
  */
-@WebServlet(name = "SecutityServlet", urlPatterns = {
+@WebServlet(name = "SecutityServlet",loadOnStartup = 1, urlPatterns = {
     "/showLogin",
     "/login",
     "/showRegistration",
     "/registration",
+    "/showChangePassword",
+    "/changePassword",
 
 })
 public class SecurityServlet extends HttpServlet {
     @EJB private UserFacade userFacade;
     @EJB private ReaderFacade readerFacade;
+
+    @Override
+    public void init() throws ServletException {
+        List<User> listUsers = userFacade.findAll();
+        if(listUsers.size() != 0){return;}
+        Reader reader = new Reader("juri.melnikov@ivkhk.ee", "Juri", "Melnikov");
+        readerFacade.create(reader);
+        Encription encription = new Encription();
+        String password = encription.getEncriptionPass("admin");
+        User user = new User("admin", password, true, reader);
+        userFacade.create(user);
+    }
+    
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -60,7 +78,9 @@ public class SecurityServlet extends HttpServlet {
                         request.setAttribute("info", "Неправильный логин или пароль!");
                         request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
                     }
-                    if(!password.equals(regUser.getPassword())){
+                    Encription encription = new Encription();
+                    String encriptPassword = encription.getEncriptionPass(password);
+                    if(!encriptPassword.equals(regUser.getPassword())){
                         request.setAttribute("info", "Неправильный логин или пароль!");
                         request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
                     }
@@ -85,9 +105,34 @@ public class SecurityServlet extends HttpServlet {
                     }
                     Reader reader = new Reader(email, name, surname);
                     readerFacade.create(reader);
-                    User user = new User(login, password1, true, reader);
+                    encription = new Encription();
+                    encriptPassword = encription.getEncriptionPass(password1);
+                    User user = new User(login, encriptPassword, true, reader);
                     userFacade.create(user);
                     request.setAttribute("info", "Регистрация успешна!");
+                    request.getRequestDispatcher("/index.jsp").forward(request, response);
+                    break;
+                case "/showChangePassword":
+                    request.getRequestDispatcher("/changePassword.jsp").forward(request, response);
+                    break;
+                case "/changePassword":
+                    session = request.getSession();
+                    regUser = (User) session.getAttribute("regUser");
+                    String oldPassword = request.getParameter("oldPassword");
+                    encription = new Encription();
+                    String encriptOldPassword = encription.getEncriptionPass(oldPassword);
+                    if(!encriptOldPassword.equals(regUser.getPassword())){
+                        request.setAttribute("info", "Вы должны войти");
+                        request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
+                        break;
+                    }
+                    String newPassword1 = request.getParameter("newPassword1");
+                    String newPassword2 = request.getParameter("newPassword2");
+                    if(newPassword1.equals(newPassword2)){
+                        regUser.setPassword(encription.getEncriptionPass(newPassword1));
+                        userFacade.edit(regUser);
+                    }
+                    request.setAttribute("info", "Вы успешно изменили пароль");
                     request.getRequestDispatcher("/index.jsp").forward(request, response);
                     break;    
             }
