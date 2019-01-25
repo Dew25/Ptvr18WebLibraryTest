@@ -8,6 +8,7 @@ package servlets;
 import entity.Book;
 import entity.History;
 import entity.Reader;
+import entity.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -20,9 +21,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import session.BookFacade;
 import session.HistoryFacade;
 import session.ReaderFacade;
+import session.UserRolesFacade;
 
 /**
  *
@@ -41,10 +44,11 @@ import session.ReaderFacade;
     "/returnBook",
 })
 public class MyServlet extends HttpServlet {
-
+    
     @EJB private BookFacade bookFacade;
     @EJB private ReaderFacade readerFacade;
     @EJB private HistoryFacade historyFacade;
+    @EJB private UserRolesFacade userRolesFacade;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -66,6 +70,21 @@ public class MyServlet extends HttpServlet {
             request.setAttribute("info", "showListBooks,привет из сервлета!");
             request.getRequestDispatcher("/WEB-INF/showListBooks.jsp").forward(request, response);
         }else if("/showListReaders".equals(path)){
+            HttpSession session = request.getSession(false);
+            if(session == null){
+                request.setAttribute("info", "Войдите!");
+                request.getRequestDispatcher("/showLogin").forward(request, response);
+            }
+            User regUser = (User) session.getAttribute("regUser");
+            if(regUser == null){
+                request.setAttribute("info", "Войдите!");
+                request.getRequestDispatcher("/showLogin").forward(request, response);
+            }
+            Boolean isRole = userRolesFacade.isRole("ADMINSTRATOR");
+            if(!isRole){
+                request.setAttribute("info", "Вы должны быть администратором!");
+                request.getRequestDispatcher("/showLogin").forward(request, response);
+            }
             List<Reader> listReaders = readerFacade.findAll();
             request.setAttribute("listReaders", listReaders);
             request.setAttribute("info", "showListReaders,привет из сервлета!");

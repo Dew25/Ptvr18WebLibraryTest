@@ -6,7 +6,9 @@
 package servlets;
 
 import entity.Reader;
+import entity.Role;
 import entity.User;
+import entity.UserRoles;
 import java.io.IOException;
 import java.util.List;
 import javax.ejb.EJB;
@@ -17,7 +19,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import session.ReaderFacade;
+import session.RoleFacade;
 import session.UserFacade;
+import session.UserRolesFacade;
 import utils.Encription;
 
 /**
@@ -36,6 +40,8 @@ import utils.Encription;
 public class SecurityServlet extends HttpServlet {
     @EJB private UserFacade userFacade;
     @EJB private ReaderFacade readerFacade;
+    @EJB private RoleFacade roleFacade;
+    @EJB private UserRolesFacade userRolesFacade;
 
     @Override
     public void init() throws ServletException {
@@ -47,6 +53,17 @@ public class SecurityServlet extends HttpServlet {
         String password = encription.getEncriptionPass("admin");
         User user = new User("admin", password, true, reader);
         userFacade.create(user);
+        Role role = new Role("ADMINSTRATOR");
+        roleFacade.create(role);
+        UserRoles ur = new UserRoles();
+        ur.setRole(role);
+        ur.setUser(user);
+        userRolesFacade.create(ur);
+        role.setName("USER");
+        roleFacade.create(role);
+        ur.setRole(role);
+        ur.setUser(user);
+        userRolesFacade.create(ur);
     }
     
     
@@ -109,6 +126,11 @@ public class SecurityServlet extends HttpServlet {
                     encriptPassword = encription.getEncriptionPass(password1);
                     User user = new User(login, encriptPassword, true, reader);
                     userFacade.create(user);
+                    UserRoles ur = new UserRoles();
+                    ur.setUser(user);
+                    Role role = roleFacade.findByName("USER");
+                    ur.setRole(role);
+                    userRolesFacade.create(ur);
                     request.setAttribute("info", "Регистрация успешна!");
                     request.getRequestDispatcher("/index.jsp").forward(request, response);
                     break;
