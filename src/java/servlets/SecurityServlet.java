@@ -135,6 +135,22 @@ public class SecurityServlet extends HttpServlet {
                     request.getRequestDispatcher("/index.jsp").forward(request, response);
                     break;
                 case "/showChangePassword":
+                    session = request.getSession(false);
+                    if(session == null){
+                        request.setAttribute("info", "Вы должны войти");
+                        request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
+                        break;
+                    }
+                    regUser = (User) session.getAttribute("regUser");
+                    if(regUser == null){
+                        request.setAttribute("info", "Вы должны войти");
+                        request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
+                        break;
+                    }
+                    String username = regUser.getReader().getName()+" "+regUser.getReader().getSurname();
+                    request.setAttribute("username", username);
+                    login = regUser.getLogin();
+                    request.setAttribute("login", login);
                     request.getRequestDispatcher("/changePassword.jsp").forward(request, response);
                     break;
                 case "/changePassword":
