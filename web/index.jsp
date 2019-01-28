@@ -15,6 +15,7 @@
         <H1>Добро пожаловать в нашу библиотеку</H1>
         ${info}<br>
         <a href="showLogin">Войти</a><br>
+        <a href="logout">Выйти</a><br>
         <a href="showListBooks">Список книг</a><br>
         <a href="showRegistration">Зарегистрироваться</a><br>
         <a href="showChangePassword">Изменить пароль</a><br>
@@ -24,7 +25,7 @@
         <a href="showPageForGiveBook">Выдать книгу</a><br>
         <a href="showPageForReturnBook">Вернуть книгу</a><br>
         <a href="showAddNewBook">Добавить книгу</a><br>
-        <a href="showAddNewReader">Добавить читателя</a><br>
+        <a href="showRegistration">Добавить читателя</a><br>
         <script src="js/index.js"></script>
     </body>
 </html>

@@ -40,8 +40,8 @@ import session.UserRolesFacade;
     "/showAddNewBook",
     "/addNewBook",
     "/showAddNewReader",
-    "/addNewReader",
     "/returnBook",
+    
 })
 public class MyServlet extends HttpServlet {
     
@@ -80,7 +80,7 @@ public class MyServlet extends HttpServlet {
                 request.setAttribute("info", "Войдите!");
                 request.getRequestDispatcher("/showLogin").forward(request, response);
             }
-            Boolean isRole = userRolesFacade.isRole("ADMINSTRATOR");
+            Boolean isRole = userRolesFacade.isRole("ADMINSTRATOR", regUser);
             if(!isRole){
                 request.setAttribute("info", "Вы должны быть администратором!");
                 request.getRequestDispatcher("/showLogin").forward(request, response);
@@ -123,14 +123,6 @@ public class MyServlet extends HttpServlet {
             request.getRequestDispatcher("/index.jsp").forward(request, response);
         }else if("/showAddNewReader".equals(path)){
             request.getRequestDispatcher("/WEB-INF/showAddNewReader.jsp").forward(request, response);
-        }else if("/addNewReader".equals(path)){
-            String name = request.getParameter("name");
-            String surname = request.getParameter("surname");
-            String code = request.getParameter("code");
-            Reader reader = new Reader(code, name, surname);
-            readerFacade.create(reader);
-            request.setAttribute("info", "Читатель \""+reader.getSurname()+"\"добавлен");
-            request.getRequestDispatcher("/index.jsp").forward(request, response);
         }else if("/showPageForReturnBook".equals(path)){
             List<History> listHistories = historyFacade.findGivenBooks();
             request.setAttribute("listHistories", listHistories);

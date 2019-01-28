@@ -31,6 +31,7 @@ import utils.Encription;
 @WebServlet(name = "SecutityServlet",loadOnStartup = 1, urlPatterns = {
     "/showLogin",
     "/login",
+    "/logout",
     "/showRegistration",
     "/registration",
     "/showChangePassword",
@@ -106,6 +107,14 @@ public class SecurityServlet extends HttpServlet {
                     request.setAttribute("info", "Вы вошли!");
                         request.getRequestDispatcher("/index.jsp").forward(request, response);
                     break;
+                case "/logout":
+                    session = request.getSession(false);
+                    if(session != null){
+                        session.invalidate();
+                        request.setAttribute("info", "Вы вышли!");
+                        request.getRequestDispatcher("/index.jsp").forward(request, response);
+                    }
+                    break;
                 case "/showRegistration":
                     request.getRequestDispatcher("/showRegistration.jsp").forward(request, response);
                     break;
@@ -171,7 +180,8 @@ public class SecurityServlet extends HttpServlet {
                         userFacade.edit(regUser);
                     }
                     request.setAttribute("info", "Вы успешно изменили пароль");
-                    request.getRequestDispatcher("/index.jsp").forward(request, response);
+                    request.getRequestDispatcher("/logout");
+                    request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
                     break;    
             }
         

@@ -13,6 +13,7 @@
     </head>
     <body>
         <h1>Изменить пароль</h1>
+        <p>${info}</p>
         <p>Здравствуйте, ${username}, вы вошли как ${login}</p>
         <form action="changePassword" method="POST">
             <br>

@@ -5,6 +5,7 @@
  */
 package session;
 
+import entity.User;
 import entity.UserRoles;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -29,10 +30,11 @@ public class UserRolesFacade extends AbstractFacade<UserRoles> {
         super(UserRoles.class);
     }
 
-    public Boolean isRole(String roleName) {
+    public Boolean isRole(String roleName, User user) {
         try {
-            UserRoles ur = (UserRoles) em.createQuery("SELECT ur FROM UserRoles ur WHERE ur.role.name=:roleName")
+            UserRoles ur = (UserRoles) em.createQuery("SELECT ur FROM UserRoles ur WHERE ur.user = :user AND ur.role.name=:roleName")
                     .setParameter("roleName", roleName)
+                    .setParameter("user", user)
                     .getSingleResult();
             if(ur != null){
                 return true;
