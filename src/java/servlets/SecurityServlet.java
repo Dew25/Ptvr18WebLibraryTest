@@ -10,7 +10,6 @@ import entity.Role;
 import entity.User;
 import entity.UserRoles;
 import java.io.IOException;
-import java.util.List;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -28,44 +27,22 @@ import utils.Encription;
  *
  * @author Melnikov
  */
-@WebServlet(name = "SecutityServlet",loadOnStartup = 1, urlPatterns = {
+@WebServlet(name = "SecutityServlet", urlPatterns = {
     "/showLogin",
     "/login",
     "/logout",
     "/showRegistration",
     "/registration",
-    "/showChangePassword",
-    "/changePassword",
+    
 
 })
 public class SecurityServlet extends HttpServlet {
     @EJB private UserFacade userFacade;
     @EJB private ReaderFacade readerFacade;
-    @EJB private RoleFacade roleFacade;
     @EJB private UserRolesFacade userRolesFacade;
+    @EJB private RoleFacade roleFacade;
 
-    @Override
-    public void init() throws ServletException {
-        List<User> listUsers = userFacade.findAll();
-        if(listUsers.size() != 0){return;}
-        Reader reader = new Reader("juri.melnikov@ivkhk.ee", "Juri", "Melnikov");
-        readerFacade.create(reader);
-        Encription encription = new Encription();
-        String password = encription.getEncriptionPass("admin");
-        User user = new User("admin", password, true, reader);
-        userFacade.create(user);
-        Role role = new Role("ADMINSTRATOR");
-        roleFacade.create(role);
-        UserRoles ur = new UserRoles();
-        ur.setRole(role);
-        ur.setUser(user);
-        userRolesFacade.create(ur);
-        role.setName("USER");
-        roleFacade.create(role);
-        ur.setRole(role);
-        ur.setUser(user);
-        userRolesFacade.create(ur);
-    }
+    
     
     
     /**
@@ -143,46 +120,7 @@ public class SecurityServlet extends HttpServlet {
                     request.setAttribute("info", "Регистрация успешна!");
                     request.getRequestDispatcher("/index.jsp").forward(request, response);
                     break;
-                case "/showChangePassword":
-                    session = request.getSession(false);
-                    if(session == null){
-                        request.setAttribute("info", "Вы должны войти");
-                        request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
-                        break;
-                    }
-                    regUser = (User) session.getAttribute("regUser");
-                    if(regUser == null){
-                        request.setAttribute("info", "Вы должны войти");
-                        request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
-                        break;
-                    }
-                    String username = regUser.getReader().getName()+" "+regUser.getReader().getSurname();
-                    request.setAttribute("username", username);
-                    login = regUser.getLogin();
-                    request.setAttribute("login", login);
-                    request.getRequestDispatcher("/changePassword.jsp").forward(request, response);
-                    break;
-                case "/changePassword":
-                    session = request.getSession();
-                    regUser = (User) session.getAttribute("regUser");
-                    String oldPassword = request.getParameter("oldPassword");
-                    encription = new Encription();
-                    String encriptOldPassword = encription.getEncriptionPass(oldPassword);
-                    if(!encriptOldPassword.equals(regUser.getPassword())){
-                        request.setAttribute("info", "Вы должны войти");
-                        request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
-                        break;
-                    }
-                    String newPassword1 = request.getParameter("newPassword1");
-                    String newPassword2 = request.getParameter("newPassword2");
-                    if(newPassword1.equals(newPassword2)){
-                        regUser.setPassword(encription.getEncriptionPass(newPassword1));
-                        userFacade.edit(regUser);
-                    }
-                    request.setAttribute("info", "Вы успешно изменили пароль");
-                    request.getRequestDispatcher("/logout");
-                    request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
-                    break;    
+                
             }
         
     }
