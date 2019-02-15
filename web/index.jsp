@@ -26,6 +26,7 @@
         <a href="showPageForReturnBook">Вернуть книгу</a><br>
         <a href="showAddNewBook">Добавить книгу</a><br>
         <a href="showRegistration">Добавить читателя</a><br>
+        <a href="showChangeRole">Изменить роль</a>
         <script src="js/index.js"></script>
     </body>
 </html>

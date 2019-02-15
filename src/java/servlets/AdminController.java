@@ -5,12 +5,12 @@
  */
 package servlets;
 
+import SecurityLogic.RoleLogic;
 import entity.Reader;
 import entity.Role;
 import entity.User;
 import entity.UserRoles;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -85,6 +85,7 @@ public class AdminController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
+        RoleLogic rl = new RoleLogic();
         Encription encription = new Encription();
         Calendar c = new GregorianCalendar();
         String path = request.getServletPath();
@@ -98,17 +99,25 @@ public class AdminController extends HttpServlet {
             request.setAttribute("info", "Войдите!");
             request.getRequestDispatcher("/showLogin").forward(request, response);
         }
-        Boolean isRole = userRolesFacade.isRole("MANAGER", regUser);
-        if(!isRole){
-            request.setAttribute("info", "Вы должны быть менеджером!");
+        boolean bool = rl.isRole("ADMINISTRATOR", regUser);
+        if(!rl.isRole("ADMINISTRATOR", regUser)){
+            request.setAttribute("info", "Вы должны быть администратором!");
             request.getRequestDispatcher("/showLogin").forward(request, response);
         }
         if(null != path) switch (path) {
             case "/showChangeRole":
-                
+                List<Role> listRoles = roleFacade.findAll();
+                List<User> listUsers = userFacade.findAll();
+                request.setAttribute("listRoles", listRoles);
+                request.setAttribute("listUsers", listUsers);
+                request.getRequestDispatcher("/showChangeRole.jsp").forward(request, response);
                 break;
             case "/changeRole":
-                
+                String roleId = request.getParameter("roleId");
+                String userId = request.getParameter("userRoles");
+                Role role = roleFacade.find(Long.parseLong(userId));
+                User user = userFacade.find(Long.parseLong(userId));
+                rl.setRole(role,user);
                 break;
         }        
     }
