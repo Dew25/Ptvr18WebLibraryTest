@@ -36,7 +36,7 @@ import utils.Encription;
     
 
 })
-public class SecurityServlet extends HttpServlet {
+public class SecurityController extends HttpServlet {
     @EJB private UserFacade userFacade;
     @EJB private ReaderFacade readerFacade;
     @EJB private UserRolesFacade userRolesFacade;

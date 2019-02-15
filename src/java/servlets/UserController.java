@@ -19,14 +19,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import session.BookFacade;
+import session.UserFacade;
 import session.UserRolesFacade;
+import utils.Encription;
 
 /**
  *
  * @author Melnikov
  */
-@WebServlet(name = "MyServlet", urlPatterns = {
+@WebServlet(name = "UserController", urlPatterns = {
     "/showListBooks",
+    "/showChangePassword",
+    "/changePassword",
     
     
 })
@@ -34,6 +38,7 @@ public class UserController extends HttpServlet {
     
     @EJB private BookFacade bookFacade;
     @EJB private UserRolesFacade userRolesFacade;
+    @EJB private UserFacade userFacade;
   
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -48,6 +53,7 @@ public class UserController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
+        Encription encription = new Encription();
         Calendar c = new GregorianCalendar();
         String path = request.getServletPath();
         HttpSession session = request.getSession(false);
@@ -65,14 +71,57 @@ public class UserController extends HttpServlet {
             request.setAttribute("info", "Вы должны быть администратором!");
             request.getRequestDispatcher("/showLogin").forward(request, response);
         }
-        
-        if("/showListBooks".equals(path)){
-            List<Book> listBooks = bookFacade.findAll();
-            request.setAttribute("listBooks", listBooks);
-            request.setAttribute("info", "showListBooks,привет из сервлета!");
-            request.getRequestDispatcher("/WEB-INF/showListBooks.jsp").forward(request, response);
-        }
-    }
+        if(path!=null)
+            switch (path) {
+                case "/showListBooks":
+                    List<Book> listBooks = bookFacade.findAll();
+                    request.setAttribute("listBooks", listBooks);
+                    request.setAttribute("info", "showListBooks,привет из сервлета!");
+                    request.getRequestDispatcher("/WEB-INF/showListBooks.jsp").forward(request, response);
+
+                case "/showChangePassword":
+                    session = request.getSession(false);
+                    if(session == null){
+                        request.setAttribute("info", "Вы должны войти");
+                        request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
+                        break;
+                    }
+                    regUser = (User) session.getAttribute("regUser");
+                    if(regUser == null){
+                        request.setAttribute("info", "Вы должны войти");
+                        request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
+                        break;
+                    }
+                    String username = regUser.getReader().getName()+" "+regUser.getReader().getSurname();
+                    request.setAttribute("username", username);
+                    String login = regUser.getLogin();
+                    request.setAttribute("login", login);
+                    request.getRequestDispatcher("/changePassword.jsp").forward(request, response);
+                    break;
+                case "/changePassword":
+                    session = request.getSession();
+                    regUser = (User) session.getAttribute("regUser");
+                    String oldPassword = request.getParameter("oldPassword");
+
+                    String encriptOldPassword = encription.getEncriptionPass(oldPassword);
+                    if(!encriptOldPassword.equals(regUser.getPassword())){
+                        request.setAttribute("info", "Вы должны войти");
+                        request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
+                        break;
+                    }
+                    String newPassword1 = request.getParameter("newPassword1");
+                    String newPassword2 = request.getParameter("newPassword2");
+                    if(newPassword1.equals(newPassword2)){
+                        regUser.setPassword(encription.getEncriptionPass(newPassword1));
+                        userFacade.edit(regUser);
+                    }
+                    request.setAttribute("info", "Вы успешно изменили пароль");
+                    request.getRequestDispatcher("/logout");
+                    request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
+                    break;    
+            }
+   }
+    
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
