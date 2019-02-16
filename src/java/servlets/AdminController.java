@@ -5,15 +5,17 @@
  */
 package servlets;
 
+import SecurityLogic.ROLE;
 import SecurityLogic.RoleLogic;
 import entity.Reader;
 import entity.Role;
 import entity.User;
-import entity.UserRoles;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -54,23 +56,15 @@ public class AdminController extends HttpServlet {
         String password = encription.getEncriptionPass("admin");
         User user = new User("admin", password, true, reader);
         userFacade.create(user);
-        Role role = new Role("ADMINSTRATOR");
+        Role role = new Role(ROLE.ADMINISTRATOR.toString());
         roleFacade.create(role);
-        UserRoles ur = new UserRoles();
-        ur.setRole(role);
-        ur.setUser(user);
-        userRolesFacade.create(ur);
-        role = new Role("MANAGER");
+        role.setName(ROLE.MANAGER.toString());
         roleFacade.create(role);
-        ur = new UserRoles();
-        ur.setRole(role);
-        ur.setUser(user);
-        userRolesFacade.create(ur);
-        role.setName("USER");
+        role.setName(ROLE.USER.toString());
         roleFacade.create(role);
-        ur.setRole(role);
-        ur.setUser(user);
-        userRolesFacade.create(ur);
+        RoleLogic rl = new RoleLogic();
+        role = rl.getRole(ROLE.ADMINISTRATOR.toString());
+        rl.setRole(role, user);
     }
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -98,26 +92,36 @@ public class AdminController extends HttpServlet {
         if(regUser == null){
             request.setAttribute("info", "Войдите!");
             request.getRequestDispatcher("/showLogin").forward(request, response);
+            return;
         }
-        boolean bool = rl.isRole("ADMINISTRATOR", regUser);
-        if(!rl.isRole("ADMINISTRATOR", regUser)){
+        if(!rl.isRole(ROLE.ADMINISTRATOR.toString(), regUser)){
             request.setAttribute("info", "Вы должны быть администратором!");
             request.getRequestDispatcher("/showLogin").forward(request, response);
+            return;
         }
         if(null != path) switch (path) {
             case "/showChangeRole":
                 List<Role> listRoles = roleFacade.findAll();
                 List<User> listUsers = userFacade.findAll();
+                Role role;
+                Map<User,Role> mapUsers = new HashMap<>();
+                for(User user : listUsers){
+                    role=rl.getRole(user);
+                    mapUsers.put(user, role);
+                }
                 request.setAttribute("listRoles", listRoles);
-                request.setAttribute("listUsers", listUsers);
-                request.getRequestDispatcher("/showChangeRole.jsp").forward(request, response);
+                request.setAttribute("mapUsers", mapUsers);
+                request.getRequestDispatcher("/WEB-INF/showChangeRole.jsp").forward(request, response);
                 break;
             case "/changeRole":
                 String roleId = request.getParameter("roleId");
-                String userId = request.getParameter("userRoles");
-                Role role = roleFacade.find(Long.parseLong(userId));
+                String userId = request.getParameter("userId");
+                role = roleFacade.find(Long.parseLong(roleId));
                 User user = userFacade.find(Long.parseLong(userId));
-                rl.setRole(role,user);
+                if(!"admin".equals(user.getLogin())){
+                    rl.setRole(role,user);
+                }
+                request.getRequestDispatcher("/showChangeRole").forward(request, response);
                 break;
         }        
     }

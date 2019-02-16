@@ -23,6 +23,7 @@ import session.UserRolesFacade;
  * @author Melnikov
  */
 public class RoleLogic {
+    static enum rolesEnum{ADMINISTRATOR,MANAGER,USER};
     private RoleFacade roleFacade;
     private UserRolesFacade userRolesFacade;
     public RoleLogic() {
@@ -39,30 +40,40 @@ public class RoleLogic {
     public void setRole(Role role, User user){
         this.removeAllRoles(user); 
         Role newRole;
-        if(null != role.getName())switch (role.getName()) {
-            case "ADMINISTRATOR":
-                newRole = this.getRole("ADMINISTRATOR");
-                this.setRole(newRole,user);
-                newRole = this.getRole("MANAGER");
-                this.setRole(newRole,user);
-                newRole = this.getRole("USER");
-                this.setRole(newRole,user);
-                break;
-            case "MANAGER":
-                newRole = this.getRole("MANAGER");
-                this.setRole(newRole,user);
-                newRole = this.getRole("USER");
-                this.setRole(newRole,user);
-                break;
-            case "USER":
-                newRole = this.getRole("USER");
-                this.setRole(newRole,user);
-                break;
-            default:
-                break;
-        }
+        UserRoles ur=new UserRoles();
+        ur.setUser(user);
+        
+        if(null != role.getName())
+            switch (role.getName()) {
+                case "ADMINISTRATOR":
+                    newRole = this.getRole(ROLE.ADMINISTRATOR.toString());
+                    ur.setRole(newRole);
+                    userRolesFacade.create(ur);
+                    newRole = this.getRole(ROLE.MANAGER.toString());
+                    ur.setRole(newRole);
+                    userRolesFacade.create(ur);
+                    newRole = this.getRole(ROLE.USER.toString());
+                    ur.setRole(newRole);
+                    userRolesFacade.create(ur);
+                    break;
+                case "MANAGER":
+                    newRole = this.getRole(ROLE.MANAGER.toString());
+                    ur.setRole(newRole);
+                    userRolesFacade.create(ur);
+                    newRole = this.getRole(ROLE.USER.toString());
+                    ur.setRole(newRole);
+                    userRolesFacade.create(ur);
+                    break;
+                case "USER":
+                    newRole = this.getRole(ROLE.USER.toString());
+                    ur.setRole(newRole);
+                    userRolesFacade.create(ur);
+                    break;
+                default:
+                    break;
+            }
     }
-    private Role getRole(String roleName){
+    public  Role getRole(String roleName){
         List<Role> roles = roleFacade.findAll();
         for(Role role: roles){
             if(roleName.equals(role.getName())){
@@ -71,17 +82,37 @@ public class RoleLogic {
         }
         return null;
     }
-    private void removeAllRoles(User user) {
+    public Role getRole(User user){
+        List<UserRoles> listUserRoles = userRolesFacade.findUserRoles(user);
+        List<String> nameRoles = new ArrayList<>();
+        for(UserRoles ur : listUserRoles){
+            nameRoles.add(ur.getRole().getName());
+        }
+        if(nameRoles.contains(ROLE.ADMINISTRATOR.toString())){
+            return getRole(ROLE.ADMINISTRATOR.toString());
+        }
+        if(nameRoles.contains(ROLE.MANAGER.toString())){
+            return getRole(ROLE.MANAGER.toString());
+        }
+        if(nameRoles.contains(ROLE.USER.toString())){
+            return getRole(ROLE.USER.toString());
+        }else{
+            return null;
+        }
+    }
+    private boolean removeAllRoles(User user) {
         List<UserRoles> userRoles = userRolesFacade.findUserRoles(user);
         userRoles.forEach((userRole) -> {
             userRolesFacade.remove(userRole);
         });
+        return true;
     }
     public void setRole(User user, Role newRole) {
         UserRoles ur = new UserRoles(user, newRole);
         userRolesFacade.create(ur);
     }
     public boolean isRole(String roleName,User user){
+        boolean res=false;
         List<UserRoles> listUserRoles = userRolesFacade.findUserRoles(user);
         List<String> listRolesByUser = new ArrayList<>();
         for(UserRoles ur : listUserRoles){
