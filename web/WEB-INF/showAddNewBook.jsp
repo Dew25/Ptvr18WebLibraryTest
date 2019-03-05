@@ -16,6 +16,7 @@
         <h1>Добавить книгу</h1>
         ${info}<br>
         <a href="index.jsp">Главная страница</a><br>
+        <a href="uploadFile.jsp">Загрузить изображение обложки книги</a>
         <form action="addNewBook" method="POST">
             Название:<br>
             <input type="text" name="name"><br>
@@ -25,6 +26,13 @@
             <input type="text" name="isbn"><br>
             Количество экземпляров:<br>
             <input type="text" name="count"><br>
+            <br>
+            Обложка книги:<br>
+            <select name="coverBook">
+                <c:forEach var="cover" items="${listCovers}">
+                    <option value="${cover.id}">${cover.name}</option>
+                </c:forEach>
+            </select>
             <br>
             <input type="submit" value="Добавить книгу">
         </form>

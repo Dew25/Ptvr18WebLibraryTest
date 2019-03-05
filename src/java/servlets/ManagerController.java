@@ -6,6 +6,7 @@
 package servlets;
 
 import entity.Book;
+import entity.Cover;
 import entity.History;
 import entity.Reader;
 import entity.Role;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import session.BookFacade;
+import session.CoverFacade;
 import session.HistoryFacade;
 import session.ReaderFacade;
 import session.RoleFacade;
@@ -50,6 +52,7 @@ public class ManagerController extends HttpServlet {
     @EJB private ReaderFacade readerFacade;
     @EJB private HistoryFacade historyFacade;
     @EJB private UserRolesFacade userRolesFacade;
+    @EJB private CoverFacade coverFacade;
     
     
     
@@ -116,6 +119,8 @@ public class ManagerController extends HttpServlet {
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 break;
             case "/showAddNewBook":
+                List<Cover> listCovers = coverFacade.findAll();
+                request.setAttribute("listCovers", listCovers);
                 request.getRequestDispatcher("/WEB-INF/showAddNewBook.jsp").forward(request, response);
                 break;
             case "/addNewBook":
