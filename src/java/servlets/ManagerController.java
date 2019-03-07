@@ -7,11 +7,10 @@ package servlets;
 
 import entity.Book;
 import entity.Cover;
+import entity.CoverBook;
 import entity.History;
 import entity.Reader;
-import entity.Role;
 import entity.User;
-import entity.UserRoles;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -24,11 +23,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import session.BookFacade;
+import session.CoverBookFacade;
 import session.CoverFacade;
 import session.HistoryFacade;
 import session.ReaderFacade;
-import session.RoleFacade;
-import session.UserFacade;
 import session.UserRolesFacade;
 import utils.Encription;
 
@@ -53,6 +51,7 @@ public class ManagerController extends HttpServlet {
     @EJB private HistoryFacade historyFacade;
     @EJB private UserRolesFacade userRolesFacade;
     @EJB private CoverFacade coverFacade;
+    @EJB private CoverBookFacade coverBookFacade;
     
     
     
@@ -130,6 +129,10 @@ public class ManagerController extends HttpServlet {
                 String count = request.getParameter("count");
                 book = new Book(isbn, name, author, new Integer(count));
                 bookFacade.create(book);
+                String coverId = request.getParameter("coverId");
+                Cover cover = coverFacade.find(new Long(coverId));
+                CoverBook coverBook = new CoverBook(book, cover);
+                coverBookFacade.create(coverBook);
                 request.setAttribute("info", "Книга \""+book.getName()+"\"добавлена");
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 break;

@@ -5,36 +5,30 @@
  */
 package servlets;
 
-import entity.Cover;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.ejb.EJB;
+import java.io.PrintWriter;
+import java.net.URLDecoder;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
-import session.CoverFacade;
 
 /**
  *
  * @author Melnikov
  */
-@WebServlet(name = "UploadController", urlPatterns = {
-    "/uploadFile",
-    
+@WebServlet(name = "InsertFileController", urlPatterns = {
+    "/insertFile/*",
 })
-@MultipartConfig()
-public class UploadController extends HttpServlet {
-    @EJB private CoverFacade coverFacade;
-    private String imagesFolder = "C:\\Users\\melnikov\\Documents\\NetBeansProjects\\PTVR16\\images";
+public class InsertFileController extends HttpServlet {
+    
+    private static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -48,38 +42,48 @@ public class UploadController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
-        List<Part> fileParts = request.getParts()
-                .stream()
-                .filter( part -> "file".equals(part.getName()))
-                .collect(Collectors.toList());
-        for(Part filePart : fileParts){
-           String path =  imagesFolder+File.separatorChar
-                            +getFileName(filePart);
-           File targetFile = new File(path);
-           try(InputStream fileContent = filePart.getInputStream()){
-               Files.copy(
-                       fileContent,targetFile.toPath(), 
-                       StandardCopyOption.REPLACE_EXISTING
-               );
-           }
-           String name = request.getParameter("description");
-           Cover cover = new Cover(name, getFileName(filePart));
-           coverFacade.create(cover);
-        }        
-        request.getRequestDispatcher("/showAddNewBook").forward(request, response);
-    }
-    private String getFileName(final Part part){
-        final String partHeader = part.getHeader("content-disposition");
-        for (String content : part.getHeader("content-disposition").split(";")){
-            if(content.trim().startsWith("filename")){
-                return content
-                        .substring(content.indexOf('=')+1)
-                        .trim()
-                        .replace("\"",""); 
+        String requestedFile = request.getPathInfo();
+        if(requestedFile == null){
+            response.sendError((HttpServletResponse.SC_NOT_FOUND));
+            return;
+        }
+        String imageFolderPath = "C:\\Users\\melnikov\\Documents\\NetBeansProjects\\PTVR16\\images";
+        File file = new File(imageFolderPath,
+                URLDecoder.decode(requestedFile, "UTF-8"));
+        if(!file.exists()){
+            response.sendError((HttpServletResponse.SC_NOT_FOUND));
+            return;
+        }
+        String contentType = getServletContext().getMimeType(file.getName());
+        if(contentType == null){
+            contentType = "application/octet-stream";
+        }
+        response.reset();
+        response.setContentType(contentType);
+        response.setBufferSize(DEFAULT_BUFFER_SIZE);
+        response.setHeader("Content-Length", String.valueOf(file.length()));
+        response.setHeader("Content-Disposition", "attachment; filename=\"" 
+                + file.getName() + "\"");
+        BufferedInputStream input = null;
+        BufferedOutputStream output = null;
+        try {
+            input = new BufferedInputStream(new FileInputStream(file),DEFAULT_BUFFER_SIZE);
+            output = new BufferedOutputStream(response.getOutputStream(),DEFAULT_BUFFER_SIZE);
+            byte[] buffer =  new byte[DEFAULT_BUFFER_SIZE];
+            int length;
+            while((length = input.read(buffer))>0){
+                output.write(buffer,0,length);
+            }
+        } finally {
+            if(output != null){
+                output.close();
+            }
+            if(input != null){
+                input.close();
             }
         }
-        return null;
     }
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.

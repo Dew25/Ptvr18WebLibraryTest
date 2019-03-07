@@ -7,7 +7,6 @@ package entity;
 
 import java.io.Serializable;
 import java.util.Objects;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,20 +17,20 @@ import javax.persistence.Id;
  * @author Melnikov
  */
 @Entity
-public class Cover implements Serializable {
+public class CoverBook implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
-    private String name;
-    private String path;
+    private Book book;
+    private Cover cover;
 
-    public Cover() {
+    public CoverBook() {
     }
 
-    public Cover(String name, String path) {
-        this.name = name;
-        this.path = path;
+    public CoverBook(Book book, Cover cover) {
+        this.book = book;
+        this.cover = cover;
     }
 
     public Long getId() {
@@ -42,28 +41,28 @@ public class Cover implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public Book getBook() {
+        return book;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setBook(Book book) {
+        this.book = book;
     }
 
-    public String getPath() {
-        return path;
+    public Cover getCover() {
+        return cover;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setCover(Cover cover) {
+        this.cover = cover;
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 79 * hash + Objects.hashCode(this.id);
-        hash = 79 * hash + Objects.hashCode(this.name);
-        hash = 79 * hash + Objects.hashCode(this.path);
+        int hash = 5;
+        hash = 23 * hash + Objects.hashCode(this.id);
+        hash = 23 * hash + Objects.hashCode(this.book);
+        hash = 23 * hash + Objects.hashCode(this.cover);
         return hash;
     }
 
@@ -78,14 +77,14 @@ public class Cover implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Cover other = (Cover) obj;
-        if (!Objects.equals(this.name, other.name)) {
-            return false;
-        }
-        if (!Objects.equals(this.path, other.path)) {
-            return false;
-        }
+        final CoverBook other = (CoverBook) obj;
         if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (!Objects.equals(this.book, other.book)) {
+            return false;
+        }
+        if (!Objects.equals(this.cover, other.cover)) {
             return false;
         }
         return true;
@@ -93,11 +92,11 @@ public class Cover implements Serializable {
 
     @Override
     public String toString() {
-        return "Cover{"
+        return "CoverBook{" 
                 + "id=" + id 
-                + ", name=" + name
-                + ", path=" + path 
+                + ", book=" + book.getName()
+                + ", cover=" + cover.getName()
                 + '}';
     }
-
+    
 }

@@ -5,7 +5,9 @@
  */
 package servlets;
 
+import SecurityLogic.RoleLogic;
 import entity.Book;
+import entity.Cover;
 import entity.User;
 import java.io.IOException;
 import java.util.Calendar;
@@ -19,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import session.BookFacade;
+import session.CoverBookFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
 import utils.Encription;
@@ -31,6 +34,7 @@ import utils.Encription;
     "/showListBooks",
     "/showChangePassword",
     "/changePassword",
+    "/showBook",
     
     
 })
@@ -39,6 +43,7 @@ public class UserController extends HttpServlet {
     @EJB private BookFacade bookFacade;
     @EJB private UserRolesFacade userRolesFacade;
     @EJB private UserFacade userFacade;
+    @EJB private CoverBookFacade coverBookFacade;
   
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -66,7 +71,8 @@ public class UserController extends HttpServlet {
             request.setAttribute("info", "Войдите!");
             request.getRequestDispatcher("/showLogin").forward(request, response);
         }
-        boolean isRole = userRolesFacade.isRole("USER", regUser);
+        RoleLogic rl = new RoleLogic();
+        boolean isRole = rl.isRole("USER", regUser);
         if(!isRole){
             request.setAttribute("info", "Вы должны быть администратором!");
             request.getRequestDispatcher("/showLogin").forward(request, response);
@@ -78,7 +84,7 @@ public class UserController extends HttpServlet {
                     request.setAttribute("listBooks", listBooks);
                     request.setAttribute("info", "showListBooks,привет из сервлета!");
                     request.getRequestDispatcher("/WEB-INF/showListBooks.jsp").forward(request, response);
-
+                    break;
                 case "/showChangePassword":
                     session = request.getSession(false);
                     if(session == null){
@@ -118,7 +124,15 @@ public class UserController extends HttpServlet {
                     request.setAttribute("info", "Вы успешно изменили пароль");
                     request.getRequestDispatcher("/logout");
                     request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
-                    break;    
+                    break;  
+                case "/showBook":
+                    String bookId = request.getParameter("bookId");
+                    Book book = bookFacade.find(new Long(bookId));
+                    Cover cover = coverBookFacade.findCover(book);
+                    request.setAttribute("cover", cover);
+                    request.setAttribute("book", book);
+                    request.getRequestDispatcher("/WEB-INF/showBook.jsp").forward(request, response);
+                    break;
             }
    }
     

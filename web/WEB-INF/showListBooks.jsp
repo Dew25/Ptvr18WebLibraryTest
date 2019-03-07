@@ -19,7 +19,7 @@
         <a href="index.jsp">Главная страница</a><br>
         <ul>
             <c:forEach var="book" items="${listBooks}">
-                <li>${book.name}, ${book.author}, ${book.isbn}
+                <li><a href="showBook?bookId=${book.id}">${book.name}, ${book.author}, ${book.isbn}</a>
             </c:forEach>
         </ul>
     </body>

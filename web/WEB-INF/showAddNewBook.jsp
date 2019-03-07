@@ -28,7 +28,7 @@
             <input type="text" name="count"><br>
             <br>
             Обложка книги:<br>
-            <select name="coverBook">
+            <select name="coverId">
                 <c:forEach var="cover" items="${listCovers}">
                     <option value="${cover.id}">${cover.name}</option>
                 </c:forEach>

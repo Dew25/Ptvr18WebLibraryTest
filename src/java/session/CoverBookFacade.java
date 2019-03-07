@@ -5,7 +5,9 @@
  */
 package session;
 
+import entity.Book;
 import entity.Cover;
+import entity.CoverBook;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -15,7 +17,7 @@ import javax.persistence.PersistenceContext;
  * @author Melnikov
  */
 @Stateless
-public class CoverFacade extends AbstractFacade<Cover> {
+public class CoverBookFacade extends AbstractFacade<CoverBook> {
 
     @PersistenceContext(unitName = "Ptvr16WebLibraryPU")
     private EntityManager em;
@@ -25,9 +27,19 @@ public class CoverFacade extends AbstractFacade<Cover> {
         return em;
     }
 
-    public CoverFacade() {
-        super(Cover.class);
+    public CoverBookFacade() {
+        super(CoverBook.class);
     }
-
-       
+    
+    public Cover findCover(Book book) {
+        try {
+            CoverBook coverBook = (CoverBook) em.createQuery("SELECT cb FROM CoverBook cb WHERE cb.book = :book")
+                    .setParameter("book", book)
+                    .getSingleResult();
+            return coverBook.getCover();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
 }
