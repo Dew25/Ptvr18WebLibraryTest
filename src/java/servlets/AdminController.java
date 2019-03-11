@@ -5,8 +5,8 @@
  */
 package servlets;
 
-import SecurityLogic.ROLE;
-import SecurityLogic.RoleLogic;
+import securitylogic.ROLE;
+import securitylogic.RoleLogic;
 import entity.Reader;
 import entity.Role;
 import entity.User;

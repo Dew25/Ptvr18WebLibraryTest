@@ -5,7 +5,7 @@
  */
 package servlets;
 
-import SecurityLogic.RoleLogic;
+import securitylogic.RoleLogic;
 import entity.Book;
 import entity.Cover;
 import entity.User;

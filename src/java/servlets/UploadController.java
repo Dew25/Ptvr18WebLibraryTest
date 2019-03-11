@@ -7,6 +7,7 @@ package servlets;
 
 import entity.Cover;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -22,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import session.CoverFacade;
+import utils.FileResizer;
 
 /**
  *
@@ -53,18 +55,20 @@ public class UploadController extends HttpServlet {
                 .filter( part -> "file".equals(part.getName()))
                 .collect(Collectors.toList());
         for(Part filePart : fileParts){
-           String path =  imagesFolder+File.separatorChar
+            String path =  imagesFolder+File.separatorChar
                             +getFileName(filePart);
-           File targetFile = new File(path);
-           try(InputStream fileContent = filePart.getInputStream()){
+            File tempFile = new File("C:\\temp"+File.separatorChar+getFileName(filePart));
+            try(InputStream fileContent = filePart.getInputStream()){
                Files.copy(
-                       fileContent,targetFile.toPath(), 
+                       fileContent,tempFile.toPath(), 
                        StandardCopyOption.REPLACE_EXISTING
                );
-           }
-           String name = request.getParameter("description");
-           Cover cover = new Cover(name, getFileName(filePart));
-           coverFacade.create(cover);
+               writeToFile(FileResizer.resize(tempFile),path);
+               tempFile.delete();
+            }
+            String name = request.getParameter("description");
+            Cover cover = new Cover(name, getFileName(filePart));
+            coverFacade.create(cover);
         }        
         request.getRequestDispatcher("/showAddNewBook").forward(request, response);
     }
@@ -79,6 +83,11 @@ public class UploadController extends HttpServlet {
             }
         }
         return null;
+    }
+    public void writeToFile(byte[] data, String fileName) throws IOException{
+        try (FileOutputStream out = new FileOutputStream(fileName)) {
+            out.write(data);
+        }
     }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
