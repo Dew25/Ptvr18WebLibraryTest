@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import securitylogic.RoleLogic;
 import session.ReaderFacade;
 import session.RoleFacade;
 import session.UserFacade;
@@ -58,6 +59,7 @@ public class SecurityController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
+        RoleLogic rl = new RoleLogic();
         HttpSession session = null;
         String path = request.getServletPath();
         if(path != null)
@@ -82,7 +84,8 @@ public class SecurityController extends HttpServlet {
                     session = request.getSession(true);
                     session.setAttribute("regUser", regUser);
                     request.setAttribute("info", "Вы вошли!");
-                        request.getRequestDispatcher("/index.jsp").forward(request, response);
+                    request.setAttribute("userRole", rl.getRole(regUser));
+                    request.getRequestDispatcher("/index.jsp").forward(request, response);
                     break;
                 case "/logout":
                     session = request.getSession(false);

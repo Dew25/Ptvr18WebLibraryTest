@@ -17,13 +17,11 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import session.RoleFacade;
 import session.UserRolesFacade;
-
 /**
  *
  * @author Melnikov
  */
 public class RoleLogic {
-    static enum rolesEnum{ADMINISTRATOR,MANAGER,USER};
     private RoleFacade roleFacade;
     private UserRolesFacade userRolesFacade;
     public RoleLogic() {
@@ -88,14 +86,14 @@ public class RoleLogic {
         for(UserRoles ur : listUserRoles){
             nameRoles.add(ur.getRole().getName());
         }
-        if(nameRoles.contains(ROLE.ADMINISTRATOR.toString())){
-            return getRole(ROLE.ADMINISTRATOR.toString());
+        if(nameRoles.contains("ADMINISTRATOR")){
+            return getRole("ADMINISTRATOR");
         }
-        if(nameRoles.contains(ROLE.MANAGER.toString())){
-            return getRole(ROLE.MANAGER.toString());
+        if(nameRoles.contains("MANAGER")){
+            return getRole("MANAGER");
         }
-        if(nameRoles.contains(ROLE.USER.toString())){
-            return getRole(ROLE.USER.toString());
+        if(nameRoles.contains("USER")){
+            return getRole("USER");
         }else{
             return null;
         }

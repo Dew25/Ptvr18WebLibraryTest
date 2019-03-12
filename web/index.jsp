@@ -4,6 +4,7 @@
     Author     : Melnikov
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -14,19 +15,33 @@
     <body>
         <H1>Добро пожаловать в нашу библиотеку</H1>
         ${info}<br>
+        
+        
         <a href="showLogin">Войти</a><br>
         <a href="logout">Выйти</a><br>
-        <a href="showListBooks">Список книг</a><br>
         <a href="showRegistration">Зарегистрироваться</a><br>
-        <a href="showChangePassword">Изменить пароль</a><br>
-        Для библиотекаря<br>
-        
-        <a href="showListReaders">Список читателей</a><br>
-        <a href="showPageForGiveBook">Выдать книгу</a><br>
-        <a href="showPageForReturnBook">Вернуть книгу</a><br>
-        <a href="showAddNewBook">Добавить книгу</a><br>
-        <a href="showRegistration">Добавить читателя</a><br>
-        <a href="showChangeRole">Изменить роль</a>
-        <script src="js/index.js"></script>
-    </body>
+       
+        <c:choose>
+            <c:when test="${userRole.name eq 'USER'}">
+                <a href="showListBooks">Список книг</a><br>
+                <a href="showChangePassword">Изменить пароль</a><br>
+            </c:when>
+            <c:when test="${userRole.name eq 'MANAGER'}">
+                <a href="showListBooks">Список книг</a><br>
+                <a href="showChangePassword">Изменить пароль</a><br>
+                <a href="showListReaders">Список читателей</a><br>
+                <a href="showPageForGiveBook">Выдать книгу</a><br>
+                <a href="showPageForReturnBook">Вернуть книгу</a><br>
+                <a href="showAddNewBook">Добавить книгу</a><br>
+            </c:when>    
+                 <c:when test="${userRole.name eq 'ADMINISTRATOR'}">
+                <a href="showListBooks">Список книг</a><br>
+                <a href="showChangePassword">Изменить пароль</a><br>
+                <a href="showListReaders">Список читателей</a><br>
+                <a href="showPageForGiveBook">Выдать книгу</a><br>
+                <a href="showPageForReturnBook">Вернуть книгу</a><br>
+                <a href="showAddNewBook">Добавить книгу</a><br>
+                <a href="showChangeRole">Изменить роль</a>
+            </c:when>   
+        </c:choose>
 </html>
