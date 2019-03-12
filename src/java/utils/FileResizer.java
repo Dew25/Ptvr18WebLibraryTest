@@ -19,7 +19,7 @@ public class FileResizer {
     public static byte[] resize(File icon) {
         try {
            BufferedImage originalImage = ImageIO.read(icon);
-           originalImage= Scalr.resize(originalImage, Scalr.Method.QUALITY, Scalr.Mode.FIT_EXACT, 600, 400);
+           originalImage= Scalr.resize(originalImage, Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH,400);
             //To save with original ratio uncomment next line and comment the above.
             //originalImage= Scalr.resize(originalImage, 153, 128);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();

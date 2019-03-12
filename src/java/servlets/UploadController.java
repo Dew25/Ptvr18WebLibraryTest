@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import session.CoverFacade;
 import utils.FileResizer;
+import utils.PropertyLoader;
 
 /**
  *
@@ -36,7 +37,7 @@ import utils.FileResizer;
 @MultipartConfig()
 public class UploadController extends HttpServlet {
     @EJB private CoverFacade coverFacade;
-    private String imagesFolder = "C:\\Users\\melnikov\\Documents\\NetBeansProjects\\PTVR16\\images";
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -50,6 +51,7 @@ public class UploadController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
+        String imagesFolder = PropertyLoader.getFolderPath("path");
         List<Part> fileParts = request.getParts()
                 .stream()
                 .filter( part -> "file".equals(part.getName()))
@@ -57,7 +59,7 @@ public class UploadController extends HttpServlet {
         for(Part filePart : fileParts){
             String path =  imagesFolder+File.separatorChar
                             +getFileName(filePart);
-            File tempFile = new File("C:\\temp"+File.separatorChar+getFileName(filePart));
+            File tempFile = new File(PropertyLoader.getFolderPath("tmp")+File.separatorChar+getFileName(filePart));
             try(InputStream fileContent = filePart.getInputStream()){
                Files.copy(
                        fileContent,tempFile.toPath(), 

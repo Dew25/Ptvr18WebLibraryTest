@@ -10,13 +10,13 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URLDecoder;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import utils.PropertyLoader;
 
 /**
  *
@@ -47,7 +47,7 @@ public class InsertFileController extends HttpServlet {
             response.sendError((HttpServletResponse.SC_NOT_FOUND));
             return;
         }
-        String imageFolderPath = "C:\\Users\\melnikov\\Documents\\NetBeansProjects\\PTVR16\\images";
+        String imageFolderPath = PropertyLoader.getFolderPath("path");
         File file = new File(imageFolderPath,
                 URLDecoder.decode(requestedFile, "UTF-8"));
         if(!file.exists()){
