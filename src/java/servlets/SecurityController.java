@@ -60,7 +60,11 @@ public class SecurityController extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
         RoleLogic rl = new RoleLogic();
-        HttpSession session = null;
+        HttpSession session = request.getSession(false);
+        User regUser = null;
+        if(session != null){
+            regUser=(User) session.getAttribute("regUser");
+        }
         String path = request.getServletPath();
         if(path != null)
             switch (path) {
@@ -70,7 +74,7 @@ public class SecurityController extends HttpServlet {
                 case "/login":
                     String login = request.getParameter("login");
                     String password = request.getParameter("password");
-                    User regUser = userFacade.findUserByLogin(login);
+                    regUser = userFacade.findUserByLogin(login);
                     if(regUser == null){
                         request.setAttribute("info", "Неправильный логин или пароль!");
                         request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
@@ -84,7 +88,7 @@ public class SecurityController extends HttpServlet {
                     session = request.getSession(true);
                     session.setAttribute("regUser", regUser);
                     request.setAttribute("info", "Вы вошли!");
-                    request.setAttribute("userRole", rl.getRole(regUser));
+                    request.setAttribute("role", rl.getRole(regUser));
                     request.getRequestDispatcher("/index.jsp").forward(request, response);
                     break;
                 case "/logout":
@@ -117,7 +121,7 @@ public class SecurityController extends HttpServlet {
                     userFacade.create(user);
                     UserRoles ur = new UserRoles();
                     ur.setUser(user);
-                    Role role = roleFacade.findByName("USER");
+                    Role role = roleFacade.findByName(RoleLogic.ROLE.USER.toString());
                     ur.setRole(role);
                     userRolesFacade.create(ur);
                     request.setAttribute("info", "Регистрация успешна!");

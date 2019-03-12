@@ -6,12 +6,15 @@
 package servlets;
 
 import entity.Cover;
+import entity.User;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
@@ -21,7 +24,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
+import securitylogic.RoleLogic;
 import session.CoverFacade;
 import utils.FileResizer;
 import utils.PropertyLoader;
@@ -51,6 +56,27 @@ public class UploadController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
+        RoleLogic rl = new RoleLogic();
+        Calendar c = new GregorianCalendar();
+        
+        HttpSession session = request.getSession(false);
+        if(session == null){
+            request.setAttribute("info", "Войдите!");
+            request.getRequestDispatcher("/showLogin").forward(request, response);
+        }
+        User regUser = (User) session.getAttribute("regUser");
+        if(regUser == null){
+            request.setAttribute("info", "Войдите!");
+            request.getRequestDispatcher("/showLogin").forward(request, response);
+        }
+        Boolean isRole = !rl.isRole(RoleLogic.ROLE.USER.toString(), regUser);
+        if(!isRole){
+            request.setAttribute("info", "Вы должны быть менеджером!");
+            request.getRequestDispatcher("/showLogin").forward(request, response);
+        }
+        
+        request.setAttribute("role", rl.getRole(regUser));
+        
         String imagesFolder = PropertyLoader.getFolderPath("path");
         List<Part> fileParts = request.getParts()
                 .stream()

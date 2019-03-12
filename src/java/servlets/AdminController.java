@@ -5,8 +5,6 @@
  */
 package servlets;
 
-import securitylogic.ROLE;
-import securitylogic.RoleLogic;
 import entity.Reader;
 import entity.Role;
 import entity.User;
@@ -23,6 +21,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import securitylogic.RoleLogic;
 import session.ReaderFacade;
 import session.RoleFacade;
 import session.UserFacade;
@@ -56,14 +55,14 @@ public class AdminController extends HttpServlet {
         String password = encription.getEncriptionPass("admin");
         User user = new User("admin", password, true, reader);
         userFacade.create(user);
-        Role role = new Role(ROLE.ADMINISTRATOR.toString());
+        Role role = new Role(RoleLogic.ROLE.ADMINISTRATOR.toString());
         roleFacade.create(role);
-        role.setName(ROLE.MANAGER.toString());
+        role.setName(RoleLogic.ROLE.MANAGER.toString());
         roleFacade.create(role);
-        role.setName(ROLE.USER.toString());
+        role.setName(RoleLogic.ROLE.USER.toString());
         roleFacade.create(role);
         RoleLogic rl = new RoleLogic();
-        role = rl.getRole(ROLE.ADMINISTRATOR.toString());
+        role = rl.getRole(RoleLogic.ROLE.ADMINISTRATOR.toString());
         rl.setRole(role, user);
     }
     /**
@@ -94,11 +93,12 @@ public class AdminController extends HttpServlet {
             request.getRequestDispatcher("/showLogin").forward(request, response);
             return;
         }
-        if(!rl.isRole(ROLE.ADMINISTRATOR.toString(), regUser)){
+        if(!rl.isRole(RoleLogic.ROLE.ADMINISTRATOR.toString(), regUser)){
             request.setAttribute("info", "Вы должны быть администратором!");
             request.getRequestDispatcher("/showLogin").forward(request, response);
             return;
         }
+        request.setAttribute("role", rl.getRole(regUser));
         if(null != path) switch (path) {
             case "/showChangeRole":
                 List<Role> listRoles = roleFacade.findAll();

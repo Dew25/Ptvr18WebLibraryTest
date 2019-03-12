@@ -22,13 +22,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import securitylogic.RoleLogic;
 import session.BookFacade;
 import session.CoverBookFacade;
 import session.CoverFacade;
 import session.HistoryFacade;
 import session.ReaderFacade;
 import session.UserRolesFacade;
-import utils.Encription;
 
 /**
  *
@@ -69,9 +69,9 @@ public class ManagerController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
-        Encription encription = new Encription();
+        RoleLogic rl = new RoleLogic();
         Calendar c = new GregorianCalendar();
-        String path = request.getServletPath();
+        
         HttpSession session = request.getSession(false);
         if(session == null){
             request.setAttribute("info", "Войдите!");
@@ -82,12 +82,17 @@ public class ManagerController extends HttpServlet {
             request.setAttribute("info", "Войдите!");
             request.getRequestDispatcher("/showLogin").forward(request, response);
         }
-        Boolean isRole = userRolesFacade.isRole("MANAGER", regUser);
+        Boolean isRole = rl.isRole(RoleLogic.ROLE.MANAGER.toString(), regUser);
         if(!isRole){
             request.setAttribute("info", "Вы должны быть менеджером!");
             request.getRequestDispatcher("/showLogin").forward(request, response);
         }
-        if(null != path) switch (path) {
+        
+        request.setAttribute("role", rl.getRole(regUser));
+        
+        String path = request.getServletPath();
+        
+        switch (path) {
             case "/showListReaders":
                 List<Reader> listReaders = readerFacade.findAll();
                 request.setAttribute("listReaders", listReaders);
@@ -161,9 +166,12 @@ public class ManagerController extends HttpServlet {
                     request.setAttribute("info", "Книга "+book.getName()+" возвращена");
                 }else{
                     request.setAttribute("info", "Все книги уже возвращены");
-                }       request.getRequestDispatcher("/index.jsp").forward(request, response);
+                }       
+                request.getRequestDispatcher("/index.jsp").forward(request, response);
                 break;
-                    
+            default:   
+                request.setAttribute("info", "Нет такой странички");
+                request.getRequestDispatcher("/index.jsp").forward(request, response);
         }
             
     }

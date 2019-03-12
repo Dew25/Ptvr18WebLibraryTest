@@ -5,17 +5,23 @@
  */
 package servlets;
 
+import entity.User;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import securitylogic.RoleLogic;
+import utils.Encription;
 import utils.PropertyLoader;
 
 /**
@@ -42,6 +48,28 @@ public class InsertFileController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
+        RoleLogic rl = new RoleLogic();
+        Encription encription = new Encription();
+        Calendar c = new GregorianCalendar();
+        String path = request.getServletPath();
+        HttpSession session = request.getSession(false);
+        if(session == null){
+            request.setAttribute("info", "Войдите!");
+            request.getRequestDispatcher("/showLogin").forward(request, response);
+        }
+        User regUser = (User) session.getAttribute("regUser");
+        if(regUser == null){
+            request.setAttribute("info", "Войдите!");
+            request.getRequestDispatcher("/showLogin").forward(request, response);
+            return;
+        }
+        if(!rl.isRole(RoleLogic.ROLE.USER.toString(), regUser)){
+            request.setAttribute("info", "Вы должны быть администратором!");
+            request.getRequestDispatcher("/showLogin").forward(request, response);
+            return;
+        }
+        request.setAttribute("role", rl.getRole(regUser));
+        
         String requestedFile = request.getPathInfo();
         if(requestedFile == null){
             response.sendError((HttpServletResponse.SC_NOT_FOUND));

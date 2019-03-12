@@ -22,11 +22,11 @@
         <a href="showRegistration">Зарегистрироваться</a><br>
        
         <c:choose>
-            <c:when test="${userRole.name eq 'USER'}">
+            <c:when test="${role.name eq 'USER'}">
                 <a href="showListBooks">Список книг</a><br>
                 <a href="showChangePassword">Изменить пароль</a><br>
             </c:when>
-            <c:when test="${userRole.name eq 'MANAGER'}">
+            <c:when test="${role.name eq 'MANAGER'}">
                 <a href="showListBooks">Список книг</a><br>
                 <a href="showChangePassword">Изменить пароль</a><br>
                 <a href="showListReaders">Список читателей</a><br>
@@ -34,7 +34,7 @@
                 <a href="showPageForReturnBook">Вернуть книгу</a><br>
                 <a href="showAddNewBook">Добавить книгу</a><br>
             </c:when>    
-                 <c:when test="${userRole.name eq 'ADMINISTRATOR'}">
+                 <c:when test="${role.name eq 'ADMINISTRATOR'}">
                 <a href="showListBooks">Список книг</a><br>
                 <a href="showChangePassword">Изменить пароль</a><br>
                 <a href="showListReaders">Список читателей</a><br>

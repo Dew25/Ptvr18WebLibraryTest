@@ -24,6 +24,13 @@ import session.UserRolesFacade;
 public class RoleLogic {
     private RoleFacade roleFacade;
     private UserRolesFacade userRolesFacade;
+    
+    public static enum ROLE {
+        ADMINISTRATOR,
+        MANAGER,
+        USER
+    }
+    
     public RoleLogic() {
         Context context;
         try {
