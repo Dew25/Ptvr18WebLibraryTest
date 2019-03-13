@@ -29,6 +29,7 @@ import session.CoverFacade;
 import session.HistoryFacade;
 import session.ReaderFacade;
 import session.UserRolesFacade;
+import utils.PagePathLoader;
 
 /**
  *
@@ -43,6 +44,7 @@ import session.UserRolesFacade;
     "/addNewBook",
     "/showAddNewReader",
     "/returnBook",
+    "/showUploadFile",
     
 })
 public class ManagerController extends HttpServlet {
@@ -97,14 +99,14 @@ public class ManagerController extends HttpServlet {
                 List<Reader> listReaders = readerFacade.findAll();
                 request.setAttribute("listReaders", listReaders);
                 request.setAttribute("info", "showListReaders,привет из сервлета!");
-                request.getRequestDispatcher("/WEB-INF/showListReaders.jsp").forward(request, response);
+                request.getRequestDispatcher(PagePathLoader.getPagePath("showListReaders")).forward(request, response);
                 break;
             case "/showPageForGiveBook":
                 List<Book> listBooks = bookFacade.findAll();
                 listReaders = readerFacade.findAll();
                 request.setAttribute("listBooks", listBooks);
                 request.setAttribute("listReaders", listReaders);
-                request.getRequestDispatcher("/WEB-INF/showPageForGiveBook.jsp").forward(request, response);
+                request.getRequestDispatcher(PagePathLoader.getPagePath("showPageForGiveBook")).forward(request, response);
                 break;
             case "/giveBook":
                 String bookId = request.getParameter("bookId");
@@ -120,12 +122,12 @@ public class ManagerController extends HttpServlet {
                 }else{
                     request.setAttribute("info", "Все книги выданы");
                 }       
-                request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
+                request.getRequestDispatcher(PagePathLoader.getPagePath("managerIndex")).forward(request, response);
                 break;
             case "/showAddNewBook":
                 List<Cover> listCovers = coverFacade.findAll();
                 request.setAttribute("listCovers", listCovers);
-                request.getRequestDispatcher("/WEB-INF/showAddNewBook.jsp").forward(request, response);
+                request.getRequestDispatcher(PagePathLoader.getPagePath("showAddNewBook")).forward(request, response);
                 break;
             case "/addNewBook":
                 String name = request.getParameter("name");
@@ -139,22 +141,22 @@ public class ManagerController extends HttpServlet {
                 CoverBook coverBook = new CoverBook(book, cover);
                 coverBookFacade.create(coverBook);
                 request.setAttribute("info", "Книга \""+book.getName()+"\"добавлена");
-                request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
+                request.getRequestDispatcher(PagePathLoader.getPagePath("managerIndex")).forward(request, response);
                 break;
             case "/showAddNewReader":
-                request.getRequestDispatcher("/WEB-INF/showAddNewReader.jsp").forward(request, response);
+                request.getRequestDispatcher(PagePathLoader.getPagePath("showAddNewReader")).forward(request, response);
                 break;
             case "/showPageForReturnBook":
                 List<History> listHistories = historyFacade.findGivenBooks();
                 request.setAttribute("listHistories", listHistories);
-                request.getRequestDispatcher("/WEB-INF/showReturnBook.jsp").forward(request, response);
+                request.getRequestDispatcher(PagePathLoader.getPagePath("showReturnBook")).forward(request, response);
                 break;
             case "/returnBook":
                 String historyId = request.getParameter("returnHistoryId");
                 History history = historyFacade.find(new Long(historyId));
                 if(history == null){
                     request.setAttribute("info", "Такой книги не выдавалось");
-                    request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
+                    request.getRequestDispatcher(PagePathLoader.getPagePath("managerIndex")).forward(request, response);
                     return;
                 }       
                 book = history.getBook();
@@ -167,11 +169,14 @@ public class ManagerController extends HttpServlet {
                 }else{
                     request.setAttribute("info", "Все книги уже возвращены");
                 }       
-                request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
+                request.getRequestDispatcher(PagePathLoader.getPagePath("managerIndex")).forward(request, response);
+                break;
+            case "/showUploadFile":
+                request.getRequestDispatcher(PagePathLoader.getPagePath("showUploadFile")).forward(request, response);
                 break;
             default:   
                 request.setAttribute("info", "Нет такой странички");
-                request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
+                request.getRequestDispatcher(PagePathLoader.getPagePath("managerIndex")).forward(request, response);
         }
             
     }

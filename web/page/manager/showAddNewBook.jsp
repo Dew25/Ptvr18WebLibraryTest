@@ -15,8 +15,8 @@
     <body>
         <h1>Добавить книгу</h1>
         ${info}<br>
-        <a href="index.jsp">Главная страница</a><br>
-        <a href="uploadFile.jsp">Загрузить изображение обложки книги</a>
+        <a href="index">Главная страница</a><br>
+        <a href="showUploadFile">Загрузить изображение обложки книги</a>
         <form action="addNewBook" method="POST">
             Название:<br>
             <input type="text" name="name"><br>

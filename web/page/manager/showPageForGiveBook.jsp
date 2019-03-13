@@ -15,7 +15,7 @@
     <body>
         <h1>Выдать книгу читателю</h1>
         ${info}<br>
-        <a href="index.jsp">Главная страница</a><br>
+        <a href="index">Главная страница</a><br>
         <form action="giveBook" method="POST">
             <select name="bookId">
                 <c:forEach var="bookItem" items="${listBooks}">

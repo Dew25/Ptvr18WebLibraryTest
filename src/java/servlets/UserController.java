@@ -25,6 +25,7 @@ import session.CoverBookFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
 import utils.Encription;
+import utils.PagePathLoader;
 
 /**
  *
@@ -74,7 +75,7 @@ public class UserController extends HttpServlet {
         RoleLogic rl = new RoleLogic();
         boolean isRole = rl.isRole(RoleLogic.ROLE.USER.toString(), regUser);
         if(!isRole){
-            request.setAttribute("info", "Вы должны быть администратором!");
+            request.setAttribute("info", "Вы должны залогииться!");
             request.getRequestDispatcher("/showLogin").forward(request, response);
         }
         request.setAttribute("role", rl.getRole(regUser));
@@ -87,36 +88,21 @@ public class UserController extends HttpServlet {
                 List<Book> listBooks = bookFacade.findAll();
                 request.setAttribute("listBooks", listBooks);
                 request.setAttribute("info", "showListBooks,привет из сервлета!");
-                request.getRequestDispatcher("/WEB-INF/showListBooks.jsp").forward(request, response);
+                request.getRequestDispatcher(PagePathLoader.getPagePath("showListBooks")).forward(request, response);
                 break;
             case "/showChangePassword":
-                session = request.getSession(false);
-                if(session == null){
-                    request.setAttribute("info", "Вы должны войти");
-                    request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
-                    break;
-                }
-                regUser = (User) session.getAttribute("regUser");
-                if(regUser == null){
-                    request.setAttribute("info", "Вы должны войти");
-                    request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
-                    break;
-                }
                 String username = regUser.getReader().getName()+" "+regUser.getReader().getSurname();
                 request.setAttribute("username", username);
                 String login = regUser.getLogin();
                 request.setAttribute("login", login);
-                request.getRequestDispatcher("/changePassword.jsp").forward(request, response);
+                request.getRequestDispatcher(PagePathLoader.getPagePath("changePassword")).forward(request, response);
                 break;
             case "/changePassword":
-                session = request.getSession();
-                regUser = (User) session.getAttribute("regUser");
                 String oldPassword = request.getParameter("oldPassword");
-
                 String encriptOldPassword = encription.getEncriptionPass(oldPassword);
                 if(!encriptOldPassword.equals(regUser.getPassword())){
                     request.setAttribute("info", "Вы должны войти");
-                    request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
+                    request.getRequestDispatcher("/showLogin").forward(request, response);
                     break;
                 }
                 String newPassword1 = request.getParameter("newPassword1");
@@ -127,7 +113,7 @@ public class UserController extends HttpServlet {
                 }
                 request.setAttribute("info", "Вы успешно изменили пароль");
                 request.getRequestDispatcher("/logout");
-                request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
+                request.getRequestDispatcher("/showLogin").forward(request, response);
                 break;  
             case "/showBook":
                 String bookId = request.getParameter("bookId");
@@ -135,7 +121,7 @@ public class UserController extends HttpServlet {
                 Cover cover = coverBookFacade.findCover(book);
                 request.setAttribute("cover", cover);
                 request.setAttribute("book", book);
-                request.getRequestDispatcher("/WEB-INF/showBook.jsp").forward(request, response);
+                request.getRequestDispatcher(PagePathLoader.getPagePath("showBook")).forward(request, response);
                 break;
         }
    }

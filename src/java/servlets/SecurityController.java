@@ -23,12 +23,14 @@ import session.RoleFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
 import utils.Encription;
+import utils.PagePathLoader;
 
 /**
  *
  * @author Melnikov
  */
 @WebServlet(name = "SecutityServlet", urlPatterns = {
+    "/index",
     "/showLogin",
     "/login",
     "/logout",
@@ -66,69 +68,73 @@ public class SecurityController extends HttpServlet {
             regUser=(User) session.getAttribute("regUser");
         }
         String path = request.getServletPath();
-        if(path != null)
-            switch (path) {
-                case "/showLogin":
-                    request.getRequestDispatcher("/jsp/showLogin.jsp").forward(request, response);
-                    break;
-                case "/login":
-                    String login = request.getParameter("login");
-                    String password = request.getParameter("password");
-                    regUser = userFacade.findUserByLogin(login);
-                    if(regUser == null){
-                        request.setAttribute("info", "Неправильный логин или пароль!");
-                        request.getRequestDispatcher("/jsp/showLogin.jsp").forward(request, response);
-                    }
-                    Encription encription = new Encription();
-                    String encriptPassword = encription.getEncriptionPass(password);
-                    if(!encriptPassword.equals(regUser.getPassword())){
-                        request.setAttribute("info", "Неправильный логин или пароль!");
-                        request.getRequestDispatcher("/jsp/showLogin.jsp").forward(request, response);
-                    }
-                    session = request.getSession(true);
-                    session.setAttribute("regUser", regUser);
-                    request.setAttribute("info", "Вы вошли!");
-                    request.setAttribute("role", rl.getRole(regUser));
-                    request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
-                    break;
-                case "/logout":
-                    session = request.getSession(false);
-                    if(session != null){
-                        session.invalidate();
-                        request.setAttribute("info", "Вы вышли!");
-                        request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
-                    }
-                    break;
-                case "/showRegistration":
-                    request.getRequestDispatcher("/showRegistration.jsp").forward(request, response);
-                    break;
-                case "/registration":
-                    String name = request.getParameter("name");
-                    String surname = request.getParameter("surname");
-                    String email = request.getParameter("email");
-                    login = request.getParameter("login");
-                    String password1 = request.getParameter("password1");
-                    String password2 = request.getParameter("password2");
-                    if(!password1.equals(password2)){
-                        request.setAttribute("info", "Несовпадает пароль!");
-                        request.getRequestDispatcher("/showRegistration.jsp").forward(request, response);
-                    }
-                    Reader reader = new Reader(email, name, surname);
-                    readerFacade.create(reader);
-                    encription = new Encription();
-                    encriptPassword = encription.getEncriptionPass(password1);
-                    User user = new User(login, encriptPassword, true, reader);
-                    userFacade.create(user);
-                    UserRoles ur = new UserRoles();
-                    ur.setUser(user);
-                    Role role = roleFacade.findByName(RoleLogic.ROLE.USER.toString());
-                    ur.setRole(role);
-                    userRolesFacade.create(ur);
-                    request.setAttribute("info", "Регистрация успешна!");
-                    request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
-                    break;
-                
-            }
+       
+        switch (path) {
+            case "/index":
+                request.getRequestDispatcher("/SessionContextServlet").forward(request, response);
+                break;
+            case "/showLogin":
+                request.getRequestDispatcher(PagePathLoader.getPagePath("showLogin")).forward(request, response);
+                break;
+            case "/login":
+                String login = request.getParameter("login");
+                String password = request.getParameter("password");
+                regUser = userFacade.findUserByLogin(login);
+                if(regUser == null){
+                    request.setAttribute("info", "Неправильный логин или пароль!");
+                    request.getRequestDispatcher(PagePathLoader.getPagePath("showLogin")).forward(request, response);
+                }
+                Encription encription = new Encription();
+                String encriptPassword = encription.getEncriptionPass(password);
+                if(!encriptPassword.equals(regUser.getPassword())){
+                    request.setAttribute("info", "Неправильный логин или пароль!");
+                    request.getRequestDispatcher(PagePathLoader.getPagePath("showLogin")).forward(request, response);
+                }
+                session = request.getSession(true);
+                session.setAttribute("regUser", regUser);
+                request.setAttribute("info", "Вы вошли как "+regUser.getLogin());
+                request.setAttribute("role", rl.getRole(regUser));
+                request.getRequestDispatcher("/SessionContextServlet").forward(request, response);
+
+                break;
+            case "/logout":
+                session = request.getSession(false);
+                if(session != null){
+                    session.invalidate();
+                    request.setAttribute("info", "Вы вышли!");
+                    request.getRequestDispatcher(PagePathLoader.getPagePath("index")).forward(request, response);
+                }
+                break;
+            case "/showRegistration":
+                request.getRequestDispatcher(PagePathLoader.getPagePath("showRegistration")).forward(request, response);
+                break;
+            case "/registration":
+                String name = request.getParameter("name");
+                String surname = request.getParameter("surname");
+                String email = request.getParameter("email");
+                login = request.getParameter("login");
+                String password1 = request.getParameter("password1");
+                String password2 = request.getParameter("password2");
+                if(!password1.equals(password2)){
+                    request.setAttribute("info", "Несовпадает пароль!");
+                    request.getRequestDispatcher(PagePathLoader.getPagePath("showRegistration")).forward(request, response);
+                }
+                Reader reader = new Reader(email, name, surname);
+                readerFacade.create(reader);
+                encription = new Encription();
+                encriptPassword = encription.getEncriptionPass(password1);
+                User user = new User(login, encriptPassword, true, reader);
+                userFacade.create(user);
+                UserRoles ur = new UserRoles();
+                ur.setUser(user);
+                Role role = roleFacade.findByName(RoleLogic.ROLE.USER.toString());
+                ur.setRole(role);
+                userRolesFacade.create(ur);
+                request.setAttribute("info", "Регистрация успешна!");
+                request.getRequestDispatcher(PagePathLoader.getPagePath("index")).forward(request, response);
+                break;
+
+        }
         
     }
 

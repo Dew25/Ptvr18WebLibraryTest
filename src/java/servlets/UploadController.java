@@ -13,8 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
@@ -57,8 +55,6 @@ public class UploadController extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
         RoleLogic rl = new RoleLogic();
-        Calendar c = new GregorianCalendar();
-        
         HttpSession session = request.getSession(false);
         if(session == null){
             request.setAttribute("info", "Войдите!");
@@ -69,7 +65,7 @@ public class UploadController extends HttpServlet {
             request.setAttribute("info", "Войдите!");
             request.getRequestDispatcher("/showLogin").forward(request, response);
         }
-        Boolean isRole = !rl.isRole(RoleLogic.ROLE.USER.toString(), regUser);
+        Boolean isRole = rl.isRole(RoleLogic.ROLE.MANAGER.toString(), regUser);
         if(!isRole){
             request.setAttribute("info", "Вы должны быть менеджером!");
             request.getRequestDispatcher("/showLogin").forward(request, response);

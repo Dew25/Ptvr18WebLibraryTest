@@ -5,11 +5,9 @@
  */
 package servlets;
 
+import entity.Role;
 import entity.User;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,12 +15,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import securitylogic.RoleLogic;
+import utils.PagePathLoader;
 
 /**
  *
  * @author Melnikov
  */
-@WebServlet(name = "SessionContextServlet", urlPatterns = {"/jsp/"})
+@WebServlet(name = "SessionContextServlet", urlPatterns = {"/SessionContextServlet"})
 public class SessionContextServlet extends HttpServlet {
 
     /**
@@ -41,14 +40,29 @@ public class SessionContextServlet extends HttpServlet {
         RoleLogic rl = new RoleLogic();
         HttpSession session = request.getSession(false);
         if(session == null){
+            request.getRequestDispatcher(PagePathLoader.getPagePath("index")).forward(request, response);
             return;
         }
         User regUser = (User) session.getAttribute("regUser");
         if(regUser == null){
+            request.getRequestDispatcher(PagePathLoader.getPagePath("index")).forward(request, response);
             return;
         }
-        request.setAttribute("role", rl.getRole(regUser));
-        request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
+        Role role = rl.getRole(regUser);
+        request.setAttribute("role", role);
+        if(role.getName().equals(RoleLogic.ROLE.ADMINISTRATOR.toString())){
+            request.getRequestDispatcher(PagePathLoader.getPagePath("adminIndex")).forward(request, response);
+            return;
+        }
+        if(role.getName().equals(RoleLogic.ROLE.MANAGER.toString())){
+            request.getRequestDispatcher(PagePathLoader.getPagePath("managerIndex")).forward(request, response);
+            return;
+        }
+        if(role.getName().equals(RoleLogic.ROLE.USER.toString())){
+            request.getRequestDispatcher(PagePathLoader.getPagePath("userIndex")).forward(request, response);
+            return;
+        }
+       
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

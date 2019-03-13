@@ -9,8 +9,6 @@ import entity.Reader;
 import entity.Role;
 import entity.User;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +25,7 @@ import session.RoleFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
 import utils.Encription;
+import utils.PagePathLoader;
 
 /**
  *
@@ -110,7 +109,7 @@ public class AdminController extends HttpServlet {
                 }
                 request.setAttribute("listRoles", listRoles);
                 request.setAttribute("mapUsers", mapUsers);
-                request.getRequestDispatcher("/WEB-INF/showChangeRole.jsp").forward(request, response);
+                request.getRequestDispatcher(PagePathLoader.getPagePath("showChangeRole")).forward(request, response);
                 break;
             case "/changeRole":
                 String roleId = request.getParameter("roleId");

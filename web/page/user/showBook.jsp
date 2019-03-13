@@ -14,7 +14,7 @@
     <body>
         <h1>Просмотр книги!</h1>
         Обложка: <br>
-        <img src="insertFile/${cover.path}" width="150" height="200" ><br>
+        <img src="insertFile/${cover.path}"  ><br>
         Заголовок: ${book.name}<br>
         Автор: ${book.author}<br>
         Доступно книг: ${book.count}
