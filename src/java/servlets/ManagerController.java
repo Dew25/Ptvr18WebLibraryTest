@@ -120,7 +120,7 @@ public class ManagerController extends HttpServlet {
                 }else{
                     request.setAttribute("info", "Все книги выданы");
                 }       
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
                 break;
             case "/showAddNewBook":
                 List<Cover> listCovers = coverFacade.findAll();
@@ -139,7 +139,7 @@ public class ManagerController extends HttpServlet {
                 CoverBook coverBook = new CoverBook(book, cover);
                 coverBookFacade.create(coverBook);
                 request.setAttribute("info", "Книга \""+book.getName()+"\"добавлена");
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
                 break;
             case "/showAddNewReader":
                 request.getRequestDispatcher("/WEB-INF/showAddNewReader.jsp").forward(request, response);
@@ -154,7 +154,7 @@ public class ManagerController extends HttpServlet {
                 History history = historyFacade.find(new Long(historyId));
                 if(history == null){
                     request.setAttribute("info", "Такой книги не выдавалось");
-                    request.getRequestDispatcher("/index.jsp").forward(request, response);
+                    request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
                     return;
                 }       
                 book = history.getBook();
@@ -167,11 +167,11 @@ public class ManagerController extends HttpServlet {
                 }else{
                     request.setAttribute("info", "Все книги уже возвращены");
                 }       
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
                 break;
             default:   
                 request.setAttribute("info", "Нет такой странички");
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
         }
             
     }

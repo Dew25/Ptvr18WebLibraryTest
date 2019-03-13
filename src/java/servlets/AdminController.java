@@ -79,9 +79,6 @@ public class AdminController extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
         RoleLogic rl = new RoleLogic();
-        Encription encription = new Encription();
-        Calendar c = new GregorianCalendar();
-        String path = request.getServletPath();
         HttpSession session = request.getSession(false);
         if(session == null){
             request.setAttribute("info", "Войдите!");
@@ -99,6 +96,8 @@ public class AdminController extends HttpServlet {
             return;
         }
         request.setAttribute("role", rl.getRole(regUser));
+        
+        String path = request.getServletPath();
         if(null != path) switch (path) {
             case "/showChangeRole":
                 List<Role> listRoles = roleFacade.findAll();

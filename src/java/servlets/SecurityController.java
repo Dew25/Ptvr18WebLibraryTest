@@ -69,7 +69,7 @@ public class SecurityController extends HttpServlet {
         if(path != null)
             switch (path) {
                 case "/showLogin":
-                    request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
+                    request.getRequestDispatcher("/jsp/showLogin.jsp").forward(request, response);
                     break;
                 case "/login":
                     String login = request.getParameter("login");
@@ -77,26 +77,26 @@ public class SecurityController extends HttpServlet {
                     regUser = userFacade.findUserByLogin(login);
                     if(regUser == null){
                         request.setAttribute("info", "Неправильный логин или пароль!");
-                        request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
+                        request.getRequestDispatcher("/jsp/showLogin.jsp").forward(request, response);
                     }
                     Encription encription = new Encription();
                     String encriptPassword = encription.getEncriptionPass(password);
                     if(!encriptPassword.equals(regUser.getPassword())){
                         request.setAttribute("info", "Неправильный логин или пароль!");
-                        request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
+                        request.getRequestDispatcher("/jsp/showLogin.jsp").forward(request, response);
                     }
                     session = request.getSession(true);
                     session.setAttribute("regUser", regUser);
                     request.setAttribute("info", "Вы вошли!");
                     request.setAttribute("role", rl.getRole(regUser));
-                    request.getRequestDispatcher("/index.jsp").forward(request, response);
+                    request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
                     break;
                 case "/logout":
                     session = request.getSession(false);
                     if(session != null){
                         session.invalidate();
                         request.setAttribute("info", "Вы вышли!");
-                        request.getRequestDispatcher("/index.jsp").forward(request, response);
+                        request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
                     }
                     break;
                 case "/showRegistration":
@@ -125,7 +125,7 @@ public class SecurityController extends HttpServlet {
                     ur.setRole(role);
                     userRolesFacade.create(ur);
                     request.setAttribute("info", "Регистрация успешна!");
-                    request.getRequestDispatcher("/index.jsp").forward(request, response);
+                    request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
                     break;
                 
             }
