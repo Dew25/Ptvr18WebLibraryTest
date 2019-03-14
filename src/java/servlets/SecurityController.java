@@ -30,7 +30,7 @@ import utils.PagePathLoader;
  * @author Melnikov
  */
 @WebServlet(name = "SecutityServlet", urlPatterns = {
-    "/index",
+    
     "/showLogin",
     "/login",
     "/logout",
@@ -70,9 +70,6 @@ public class SecurityController extends HttpServlet {
         String path = request.getServletPath();
        
         switch (path) {
-            case "/index":
-                request.getRequestDispatcher("/SessionContextServlet").forward(request, response);
-                break;
             case "/showLogin":
                 request.getRequestDispatcher(PagePathLoader.getPagePath("showLogin")).forward(request, response);
                 break;

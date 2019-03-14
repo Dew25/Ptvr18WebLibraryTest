@@ -21,7 +21,11 @@ import utils.PagePathLoader;
  *
  * @author Melnikov
  */
-@WebServlet(name = "SessionContextServlet", urlPatterns = {"/SessionContextServlet"})
+@WebServlet(name = "SessionContextServlet", urlPatterns = {
+    "/SessionContextServlet",
+    "/index",
+
+})
 public class SessionContextServlet extends HttpServlet {
 
     /**

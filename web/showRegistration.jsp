@@ -15,7 +15,7 @@
     <body>
         <h1>Зарегистрироваться/h1>
         ${info}<br>
-        <a href="index.jsp">Введите данные пользователя</a><br>
+        <a href="index">Введите данные пользователя</a><br>
         <form action="registration" method="POST">
             Имя:<br>
             <input type="text" name="name"><br>
