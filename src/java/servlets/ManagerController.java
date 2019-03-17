@@ -111,6 +111,11 @@ public class ManagerController extends HttpServlet {
             case "/giveBook":
                 String bookId = request.getParameter("bookId");
                 String readerId = request.getParameter("readerId");
+                if(bookId == null || bookId.isEmpty() || readerId == null || readerId.isEmpty()){
+                    request.setAttribute("info", "Вы не выбрали книгу или читателя");
+                    request.getRequestDispatcher("/showPageForGiveBook").forward(request, response);
+                    break;
+                }
                 Book book = bookFacade.find(new Long(bookId));
                 Reader reader = readerFacade.find(new Long(readerId));
                 if(book.getCount()>0){
@@ -134,6 +139,14 @@ public class ManagerController extends HttpServlet {
                 String author = request.getParameter("author");
                 String isbn = request.getParameter("isbn");
                 String count = request.getParameter("count");
+                if(name== null || name.isEmpty() 
+                    || author == null || author.isEmpty()
+                    || isbn == null || isbn.isEmpty()
+                    || count == null || count.isEmpty()){
+                    request.setAttribute("info", "Выберите все поля");
+                    request.getRequestDispatcher("/showAddNewBook").forward(request, response);
+                    break;
+                }
                 book = new Book(isbn, name, author, new Integer(count));
                 bookFacade.create(book);
                 String coverId = request.getParameter("coverId");
@@ -153,7 +166,10 @@ public class ManagerController extends HttpServlet {
                 break;
             case "/returnBook":
                 String historyId = request.getParameter("returnHistoryId");
-                History history = historyFacade.find(new Long(historyId));
+                History history = null;
+                if(historyId != null){
+                    history = historyFacade.find(new Long(historyId));
+                }
                 if(history == null){
                     request.setAttribute("info", "Такой книги не выдавалось");
                     request.getRequestDispatcher(PagePathLoader.getPagePath("managerIndex")).forward(request, response);

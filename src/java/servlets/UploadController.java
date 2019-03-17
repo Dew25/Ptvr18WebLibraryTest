@@ -54,6 +54,12 @@ public class UploadController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
+        String name = request.getParameter("description");
+        if(name==null || name.isEmpty()){
+            request.setAttribute("info", "Добавьет название файла");
+            request.getRequestDispatcher("/showUploadFile").forward(request, response);
+            return;
+        }
         RoleLogic rl = new RoleLogic();
         HttpSession session = request.getSession(false);
         if(session == null){
@@ -90,7 +96,7 @@ public class UploadController extends HttpServlet {
                writeToFile(FileResizer.resize(tempFile),path);
                tempFile.delete();
             }
-            String name = request.getParameter("description");
+            
             Cover cover = new Cover(name, getFileName(filePart));
             coverFacade.create(cover);
         }        

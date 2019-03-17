@@ -13,7 +13,7 @@
         <title>Библиотека</title>
     </head>
     <body>
-        <h1>Добавить книгу/h1>
+        <h1>Добавить книгу</h1>
         ${info}<br>
         <a href="index">Главная страница</a><br>
         <form action="returnBook" method="POST">
@@ -24,7 +24,12 @@
             </ul>
             <br>
             Номер позиции возврата:<br>
-            <input type="text" name="returnHistoryId">
+            <select name="returnHistoryId">
+                <c:forEach var="history" items="${listHistories}">
+                    <option value="${history.id}">${history.id}</option>
+                </c:forEach>
+            </select>
+            
             <input type="submit" value="Вернуть книгу">
         </form>
     </body>

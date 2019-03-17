@@ -17,12 +17,15 @@
         ${info}<br>
         <a href="index">Главная страница</a><br>
         <form action="giveBook" method="POST">
-            <select name="bookId">
+            <select name="bookId" >
+                <option disabled selected>Выберите книгу</option>
                 <c:forEach var="bookItem" items="${listBooks}">
                     <option value="${bookItem.id}">${bookItem.name}</option>
                 </c:forEach>
             </select>
+            
             <select name="readerId">
+                <option disabled selected>Выберите читателя</option>
                 <c:forEach var="readerItem" items="${listReaders}">
                     <option value="${readerItem.id}">${readerItem.name} ${readerItem.surname}</option>
                 </c:forEach>

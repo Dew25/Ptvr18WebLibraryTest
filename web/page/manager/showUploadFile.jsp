@@ -13,6 +13,7 @@
     </head>
     <body>
         <h1>Загрузка файла!</h1>
+        <p>${info}</p>
         <form action="uploadFile" method="POST" enctype="multipart/form-data">
             <input type="text" name="description"><br>
             <input type="file" name="file"><br>

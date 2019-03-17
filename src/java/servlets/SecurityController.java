@@ -114,14 +114,33 @@ public class SecurityController extends HttpServlet {
                 String password2 = request.getParameter("password2");
                 if(!password1.equals(password2)){
                     request.setAttribute("info", "Несовпадает пароль!");
-                    request.getRequestDispatcher(PagePathLoader.getPagePath("showRegistration")).forward(request, response);
+                    request.getRequestDispatcher(PagePathLoader.getPagePath("index")).forward(request, response);
                 }
                 Reader reader = new Reader(email, name, surname);
-                readerFacade.create(reader);
+                try {
+                    readerFacade.create(reader);
+                } catch (Exception e) {
+                    request.setAttribute("name", name);
+                    request.setAttribute("surname", surname);
+                    request.setAttribute("info", "email "+email+" уже используется");
+                    request.getRequestDispatcher("/showRegistration").forward(request, response);
+                    break;
+                }
+                
                 encription = new Encription();
                 encriptPassword = encription.getEncriptionPass(password1);
                 User user = new User(login, encriptPassword, true, reader);
-                userFacade.create(user);
+                try {
+                   userFacade.create(user); 
+                } catch (Exception e) {
+                    request.setAttribute("name", name);
+                    request.setAttribute("surname", surname);
+                    request.setAttribute("email", email);
+                    request.setAttribute("info", "логин "+login+" уже используется");
+                    request.getRequestDispatcher("/showRegistration").forward(request, response);
+                    break;
+                }
+                
                 UserRoles ur = new UserRoles();
                 ur.setUser(user);
                 Role role = roleFacade.findByName(RoleLogic.ROLE.USER.toString());

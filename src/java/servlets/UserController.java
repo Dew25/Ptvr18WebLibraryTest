@@ -85,9 +85,17 @@ public class UserController extends HttpServlet {
         
         switch (path) {
             case "/showListBooks":
-                List<Book> listBooks = bookFacade.findAll();
+                List<Book> listBooks = null;
+                try {
+                    listBooks = bookFacade.findAll();
+                } catch (Exception e) {
+                    request.setAttribute("info", "Список книг пуст");
+                    request.getRequestDispatcher(PagePathLoader.getPagePath("showListBooks")).forward(request, response);
+                    break;
+                }
+                
                 request.setAttribute("listBooks", listBooks);
-                request.setAttribute("info", "showListBooks,привет из сервлета!");
+                request.setAttribute("info", "Список книг найден");
                 request.getRequestDispatcher(PagePathLoader.getPagePath("showListBooks")).forward(request, response);
                 break;
             case "/showChangePassword":
