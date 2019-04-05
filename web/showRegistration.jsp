@@ -14,7 +14,7 @@
     </head>
     <body>
         <h1>Зарегистрироваться</h1>
-        ${info}<br>
+        <p id="info">${info}</p>
         <a href="index">Введите данные пользователя</a><br>
         <form action="registration" method="POST">
             Имя:<br>

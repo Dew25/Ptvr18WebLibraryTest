@@ -14,9 +14,9 @@
     </head>
     <body>
         <H1>Добро пожаловать в нашу библиотеку</H1>
-        ${info}<br>
-        <a href="showLogin">Войти</a><br>
-        <a href="logout">Выйти</a><br>
-        <a href="showRegistration">Зарегистрироваться</a><br>
+        <p id="info">${info}</p>
+        <a id="showLogin" href="showLogin">Войти</a><br>
+        <a id="logout" href="logout">Выйти</a><br>
+        <a id="showRegistration" href="showRegistration">Зарегистрироваться</a><br>
     </body>        
 </html>

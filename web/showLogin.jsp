@@ -13,7 +13,7 @@
     </head>
     <body>
         <h1>Войдите!</h1>
-        <p>${info}</p>
+         <p id="info">${info}</p>
         <form action="login" method="POST">
             Логин:<br>
             <input type="text" name="login">
@@ -21,7 +21,7 @@
             Пароль:<br>
             <input type="password" name="password">
             <br>
-            <input type="submit" value="Войти">
+            <input type="submit" id="enter" value="Войти">
         </form>
     </body>
 </html>
